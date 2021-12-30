@@ -1,0 +1,25 @@
+{
+  "name": "phonebook-backend",
+  "version": "1.0.0",
+  "description": "Main Repo: https://github.com/RaihanStark/fullstack-open",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaihanStark/fullstack-open-part3.git"
+  },
+  "author": "Raihan Yudo Saputra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RaihanStark/fullstack-open-part3/issues"
+  },
+  "homepage": "https://github.com/RaihanStark/fullstack-open-part3#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  }
+}
