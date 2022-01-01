@@ -15,6 +15,7 @@ morgan.token("data", function getData(req) {
 app.use(cors());
 app.use(express.json());
 app.use(morgan(":method :url :status :response-time ms :data"));
+app.use(express.static("build"));
 
 // Generate Random ID
 const generateRandomID = () => {
