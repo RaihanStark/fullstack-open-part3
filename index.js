@@ -1,7 +1,10 @@
 // Initializing App
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+
+const Contact = require("./models/contact");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,45 +25,18 @@ const generateRandomID = () => {
   return Math.floor(Math.random() * 10000);
 };
 
-// Data
-persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 // GET
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Contact.find().then((result) => response.json(result));
 });
 
 // GET SINGLE PERSON
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  Contact.findById(request.params.id)
+    .then((result) =>
+      result ? response.json(result) : response.status(404).end()
+    )
+    .catch((err) => response.status(404).end());
 });
 
 // CREATE A SINGLE PERSON
@@ -74,22 +50,20 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  // Check Duplication
-  const duplication = persons.find((person) => person.name === body.name);
-  if (duplication) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
+  // // Check Duplication
+  // const duplication = persons.find((person) => person.name === body.name);
+  // if (duplication) {
+  //   return response.status(400).json({
+  //     error: "name must be unique",
+  //   });
+  // }
 
-  const newPerson = {
-    id: generateRandomID(),
+  const newContact = new Contact({
     name: body.name,
-    number: body.number,
-  };
-  persons = persons.concat(newPerson);
+    phoneNumber: body.number,
+  });
 
-  response.json(newPerson);
+  newContact.save().then((result) => response.json(result));
 });
 
 // DELETE SINGLE PERSON
