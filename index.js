@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Initializing App
 require("dotenv").config();
 const express = require("express");
@@ -19,11 +20,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan(":method :url :status :response-time ms :data"));
 app.use(express.static("build"));
-
-// Generate Random ID
-const generateRandomID = () => {
-  return Math.floor(Math.random() * 10000);
-};
 
 // GET
 app.get("/api/persons", (request, response) => {
@@ -66,7 +62,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
 
   Contact.findByIdAndRemove(id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((err) => next(err));
@@ -92,9 +88,11 @@ app.put("/api/persons/:id", (request, response, next) => {
 // SHOW PHONEBOOK INFO
 app.get("/info", (request, response) => {
   const date = new Date().toString();
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people</p> ${date}`
-  );
+  Contact.find().then((result) => {
+    response.send(
+      `<p>Phonebook has info for ${result.length} people</p> ${date}`
+    );
+  });
 });
 
 const errorHandler = (error, request, response, next) => {

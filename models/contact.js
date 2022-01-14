@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
@@ -5,7 +6,7 @@ const URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(URI)
-  .then((result) => {
+  .then(() => {
     console.log("connected to MongoDB");
   })
   .catch((error) => {

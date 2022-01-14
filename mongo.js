@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require("mongoose");
 
 if (process.argv.length < 3) {
@@ -29,7 +30,7 @@ if (process.argv.length > 3) {
     phoneNumber,
   });
 
-  return contact.save().then((result) => {
+  return contact.save().then(() => {
     console.log(`added ${name} number ${phoneNumber} to phonebook`);
     mongoose.connection.close();
   });
