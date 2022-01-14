@@ -31,16 +31,16 @@ app.get("/api/persons", (request, response) => {
 });
 
 // GET SINGLE PERSON
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   Contact.findById(request.params.id)
     .then((result) =>
       result ? response.json(result) : response.status(404).end()
     )
-    .catch((err) => response.status(404).end());
+    .catch((err) => next(err));
 });
 
 // CREATE A SINGLE PERSON
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   // Check Body Parameter
@@ -50,28 +50,43 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  // // Check Duplication
-  // const duplication = persons.find((person) => person.name === body.name);
-  // if (duplication) {
-  //   return response.status(400).json({
-  //     error: "name must be unique",
-  //   });
-  // }
-
   const newContact = new Contact({
     name: body.name,
     phoneNumber: body.number,
   });
 
-  newContact.save().then((result) => response.json(result));
+  newContact
+    .save()
+    .then((result) => response.json(result))
+    .catch((err) => next(err));
 });
 
 // DELETE SINGLE PERSON
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
+app.delete("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
 
-  response.status(204).end();
+  Contact.findByIdAndRemove(id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((err) => next(err));
+});
+
+// UPDATE SINGLE PERSON
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+  const body = request.body;
+
+  const updatedPersonBody = {
+    name: body.name,
+    phoneNumber: body.number,
+  };
+
+  Contact.findByIdAndUpdate(id, updatedPersonBody, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 // SHOW PHONEBOOK INFO
@@ -81,6 +96,20 @@ app.get("/info", (request, response) => {
     `<p>Phonebook has info for ${persons.length} people</p> ${date}`
   );
 });
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.name);
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
+  }
+
+  next(error);
+};
+app.use(errorHandler);
 
 // App Listener
 app.listen(PORT, () => {
