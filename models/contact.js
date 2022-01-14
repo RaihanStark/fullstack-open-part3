@@ -13,8 +13,8 @@ mongoose
   });
 
 const contactSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  phoneNumber: { type: String, required: true, unique: false },
+  name: { type: String, required: true, unique: true, minLength: 3 },
+  phoneNumber: { type: String, required: true, unique: false, minLength: 8 },
 });
 
 contactSchema.plugin(uniqueValidator);
